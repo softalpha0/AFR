@@ -1,5 +1,5 @@
 # AFR Savings Vault  
-*A simple USD savings vault powered by AFR — starting on Base testnet.*
+*A simple USD savings vault powered by AFR - starting on Base testnet.*
 
 AFR is a lightweight, transparent, smart-contract–powered savings vault built to help people preserve value in a stable USD-denominated asset, starting with the AFR ecosystem.
 
