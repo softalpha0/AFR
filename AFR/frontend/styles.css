@@ -1,0 +1,27 @@
+body {
+  background-color: #05060b;
+  color: white;
+  font-family: system-ui, sans-serif;
+}
+
+.card {
+  background: #0c0f1a;
+  border: 1px solid #1e2235;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.button-primary {
+  background: #3b82f6;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-primary:disabled {
+  background: #33384f;
+  cursor: not-allowed;
+}

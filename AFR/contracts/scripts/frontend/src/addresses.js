@@ -1,0 +1,2 @@
+export const MUSDC_ADDRESS = "0x81c981d567e25c1ab079bbf477077cd7c05b1ea3";
+export const VAULT_ADDRESS = "0x253cc12ed14f540aa8889ae13f27e47518eb6d66";

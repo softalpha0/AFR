@@ -1,0 +1,6 @@
+[submodule "DomaDex/lib/openzeppelin-contracts"]
+	path = DomaDex/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "DomaDex/lib/forge-std"]
+	path = DomaDex/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std

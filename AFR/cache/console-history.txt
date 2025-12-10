@@ -1,0 +1,3 @@
+.exit
+(await ethers.provider.getBalance("0x82ac58f4be1bb904bbe99eb6f97bf526a43806ed")).toString()
+.help
