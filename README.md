@@ -9,14 +9,14 @@ This repository contains the **smart contracts**, **frontend dApp**, and **roadm
 
 Many regions experience unstable financial systems and rising inflation. Stablecoins and on-chain finance give people a way to store value. But most existing DeFi apps are complex, risky, and not user-friendly.
 
-**AFR clears this with one simple a simple flow.**
+**AFR clears this with a simple flow.**
 
 1. Deposit USD-stable tokens  
 2. Receive aSHARE vault tokens  
 3. Withdraw anytime. No lock ups  
 4. As the vault grows, each share becomes redeemable for more USD
 
-Today AFR is a **testnet prototype on Base Sepolia**, using **mock USDC (mUSDC)**.  
+Today, AFR is a **testnet prototype on Base Sepolia**, using **mock USDC (mUSDC)**.  
 Tomorrow, AFR mainnet. An AFR app-chain rollup, and eventually a standalone L1 if necessary.
 
 
