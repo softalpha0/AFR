@@ -7,7 +7,7 @@ This repository contains the **smart contracts**, **frontend dApp**, and **roadm
 
 # Vision
 
-Many regions experience unstable financial systems and rising inflation. Stablecoins and on-chain finance give people a way to store value — but most existing DeFi apps are complex, risky, and not user-friendly.
+Many regions experience unstable financial systems and rising inflation. Stablecoins and on-chain finance give people a way to store value - but most existing DeFi apps are complex, risky, and not user-friendly.
 
 **AFR solves this with one simple flow:**
 
