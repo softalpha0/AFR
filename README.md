@@ -1,19 +1,19 @@
 # AFR Savings Vault  
-*A simple USD savings vault powered by AFR - starting on Base testnet.*
+*A simple USD savings vault powered by AFR, starting on Base testnet.*
 
-AFR is a lightweight, transparent, smart-contract–powered savings vault built to help people preserve value in a stable USD-denominated asset, starting with the AFR ecosystem.
+AFR is a, transparent, smart-contract–powered savings vault built to help people preserve value in a stable USD-denominated asset, starting with the AFR ecosystem.
 
 This repository contains the **smart contracts**, **frontend dApp**, and **roadmap** for AFR.
 
 # Vision
 
-Many regions experience unstable financial systems and rising inflation. Stablecoins and on-chain finance give people a way to store value - but most existing DeFi apps are complex, risky, and not user-friendly.
+Many regions experience unstable financial systems and rising inflation. Stablecoins and on-chain finance give people a way to store value. But most existing DeFi apps are complex, risky, and not user-friendly.
 
-**AFR solves this with one simple flow:**
+**AFR clears this with one simple flow:**
 
 1. Deposit USD-stable tokens  
 2. Receive aSHARE vault tokens  
-3. Withdraw anytime — no lockups  
+3. Withdraw anytime. no lockups  
 4. As the vault grows, each share becomes redeemable for more USD
 
 Today AFR is a **testnet prototype on Base Sepolia**, using **mock USDC (mUSDC)**.  
