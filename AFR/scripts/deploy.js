@@ -1,35 +1,46 @@
-const { ethers } = require("hardhat");
+
+const hre = require("hardhat");
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-
+  const [deployer] = await hre.ethers.getSigners();
   console.log("Deploying with:", deployer.address);
 
-  // 1. Deploy MockUSDC
-  const MockUSDC = await ethers.getContractFactory("MockUSDC");
-  const mockUSDC = await MockUSDC.deploy();
-  await mockUSDC.waitForDeployment();
-  const mockUSDCAddress = await mockUSDC.getAddress();
-  console.log("MockUSDC deployed at:", mockUSDCAddress);
+  
+  const MockUSDC = await hre.ethers.getContractFactory("MockUSDC");
+  const mock = await MockUSDC.deploy();
+  await mock.waitForDeployment();
+  const mockAddress = await mock.getAddress();
+  console.log("MockUSDC deployed to:", mockAddress);
 
-  // 2. Deploy SavingsVault
-  const SavingsVault = await ethers.getContractFactory("SavingsVault");
+  
+  const SavingsVault = await hre.ethers.getContractFactory("SavingsVault");
   const vault = await SavingsVault.deploy(
-    mockUSDCAddress,
-    "AFR Savings Vault Share",
+    mockAddress,
+    "AFR Savings Share",
     "aSHARE"
   );
   await vault.waitForDeployment();
   const vaultAddress = await vault.getAddress();
-  console.log("SavingsVault deployed at:", vaultAddress);
+  console.log("SavingsVault deployed to:", vaultAddress);
 
-  // Optional: mint extra mUSDC to yourself for testing
-  const mintTx = await mockUSDC.mint(
-    deployer.address,
-    ethers.parseUnits("100000", 6) // 100,000 mUSDC
-  );
-  await mintTx.wait();
-  console.log("Minted extra mUSDC to deployer");
+  
+  const Faucet = await hre.ethers.getContractFactory("Faucet");
+  const faucet = await Faucet.deploy(mockAddress);
+  await faucet.waitForDeployment();
+  const faucetAddress = await faucet.getAddress();
+  console.log("Faucet deployed to:", faucetAddress);
+
+  
+  const seedAmount = hre.ethers.parseUnits("1000000", 6); 
+  const txSeed = await mock.transfer(faucetAddress, seedAmount);
+  await txSeed.wait();
+  console.log("Seeded faucet with 1,000,000 mUSDC");
+
+  console.log("Done!");
+  console.log("\nAddresses:");
+  console.log("  mUSDC   :", mockAddress);
+  console.log("  Vault   :", vaultAddress);
+  console.log("  Faucet  :", faucetAddress);
 }
 
 main().catch((error) => {

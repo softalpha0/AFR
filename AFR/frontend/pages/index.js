@@ -1,401 +1,284 @@
-import { useState } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
-import { parseUnits, formatUnits } from "viem";
-
-import { MUSDC_ADDRESS, VAULT_ADDRESS } from "../addresses";
-import { mockUsdcAbi, vaultAbi } from "../abis";
-
-const MUSDC_DECIMALS = 6;
-const SHARE_DECIMALS = 18;
 
 
-const compactNumber = (num) =>
-  Intl.NumberFormat("en-US", {
-    notation: "compact",
-    compactDisplay: "short",
-    maximumFractionDigits: 3,
-  }).format(num);
+import Link from "next/link";
 
-const displayUsdc = (val, fractionDigits = 6) => {
-  if (!val) return "0.00";
-  const num = Number(formatUnits(val, MUSDC_DECIMALS));
-
-  
-  if (num >= 1000000) return compactNumber(num);
-
-  return num.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: fractionDigits,
-  });
-};
-
-const displayShares = (val, fractionDigits = 6) => {
-  if (!val) return "0.00";
-  const num = Number(formatUnits(val, SHARE_DECIMALS));
-
-  if (num >= 1000000) return compactNumber(num);
-
-  return num.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: fractionDigits,
-  });
-};
-
-export default function Home() {
-  const { address } = useAccount();
-  const [depositAmount, setDepositAmount] = useState("");
-  const [withdrawShares, setWithdrawShares] = useState("");
-  const { writeContractAsync, isPending } = useWriteContract();
-
-  // ---- READS ----
-  const { data: mUsdcBalance } = useReadContract({
-    address: MUSDC_ADDRESS,
-    abi: mockUsdcAbi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: { enabled: !!address },
-  });
-
-  const { data: shareBalance } = useReadContract({
-    address: VAULT_ADDRESS,
-    abi: vaultAbi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: { enabled: !!address },
-  });
-
-  const { data: totalAssets } = useReadContract({
-    address: VAULT_ADDRESS,
-    abi: vaultAbi,
-    functionName: "totalAssets",
-    args: [],
-  });
-
-  const { data: totalShares } = useReadContract({
-    address: VAULT_ADDRESS,
-    abi: vaultAbi,
-    functionName: "totalShares",
-    args: [],
-  });
-
-  
-  const positionValue =
-    shareBalance && totalAssets && totalShares && totalShares > 0n
-      ? (shareBalance * totalAssets) / totalShares
-      : 0n;
-
-  
-  const sharePrice =
-    totalAssets && totalShares && totalShares > 0n
-      ? Number(
-          
-          formatUnits(
-            (totalAssets * 10n ** 18n) / totalShares,
-            MUSDC_DECIMALS
-          )
-        )
-      : 1;
-
-  
-  const handleDeposit = async () => {
-    if (!address || !depositAmount) return;
-
-    try {
-      const amount = parseUnits(depositAmount, MUSDC_DECIMALS);
-
-      
-      const approveHash = await writeContractAsync({
-        address: MUSDC_ADDRESS,
-        abi: mockUsdcAbi,
-        functionName: "approve",
-        args: [VAULT_ADDRESS, amount],
-      });
-      console.log("approve tx:", approveHash);
-
-      
-      const depositHash = await writeContractAsync({
-        address: VAULT_ADDRESS,
-        abi: vaultAbi,
-        functionName: "deposit",
-        args: [amount],
-      });
-      console.log("deposit tx:", depositHash);
-
-      setDepositAmount("");
-    } catch (err) {
-      console.error(err);
-      alert(err?.shortMessage || err?.message || "Deposit failed");
-    }
-  };
-
-  const handleWithdraw = async () => {
-    if (!address || !withdrawShares) return;
-    try {
-      const shares = parseUnits(withdrawShares, SHARE_DECIMALS);
-
-      const hash = await writeContractAsync({
-        address: VAULT_ADDRESS,
-        abi: vaultAbi,
-        functionName: "withdraw",
-        args: [shares],
-      });
-      console.log("withdraw tx:", hash);
-
-      setWithdrawShares("");
-    } catch (err) {
-      console.error(err);
-      alert(err?.shortMessage || err?.message || "Withdraw failed");
-    }
-  };
-
+export default function LandingPage() {
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "#05060b",
+        background: "radial-gradient(circle at top, #ff5a5f 0%, #05060b 55%)",
         color: "white",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "3rem 1rem",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: "2.5rem 1rem 3rem",
       }}
     >
-      <div
+      
+      <header
         style={{
           width: "100%",
-          maxWidth: "900px",
+          maxWidth: "1000px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "2rem",
+          marginBottom: "2.5rem",
         }}
       >
-        <h1 style={{ fontSize: "1.8rem", fontWeight: 600 }}>
-          AFR Savings Vault
-        </h1>
-        <ConnectButton />
-      </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: "999px",
+              background:
+                "conic-gradient(from 180deg at 50% 50%, #22c55e, #f97316, #facc15, #22c55e)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.7rem",
+              fontWeight: 700,
+            }}
+          >
+            AFR
+          </div>
+          <span style={{ fontWeight: 600, fontSize: "1rem" }}>
+            AFR Savings Vault
+          </span>
+        </div>
 
-      <div
+        <nav
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            fontSize: "0.85rem",
+          }}
+        >
+          <a
+            href="https://github.com/softalpha0/AFR"
+            target="_blank"
+            rel="noreferrer"
+            style={{ opacity: 0.9, textDecoration: "none", color: "white" }}
+          >
+            GitHub
+          </a>
+
+          
+          <span style={{ opacity: 0.4 }}>Docs (coming soon)</span>
+
+          <Link
+            href="/vault"
+            style={{
+              padding: "0.55rem 1.2rem",
+              borderRadius: "999px",
+              background: "#f97316",
+              color: "white",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              textDecoration: "none",
+              boxShadow: "0 10px 30px rgba(248, 250, 252, 0.15)",
+            }}
+          >
+            Launch testnet app
+          </Link>
+        </nav>
+      </header>
+
+      
+      <main
         style={{
           width: "100%",
-          maxWidth: "900px",
+          maxWidth: "1000px",
           display: "grid",
-          gridTemplateColumns: "1.2fr 1fr",
-          gap: "1.5rem",
+          gridTemplateColumns: "minmax(0, 1.3fr) minmax(0, 1fr)",
+          gap: "2.5rem",
+          alignItems: "flex-start",
         }}
       >
-        {/* Left: balances & actions */}
-        <div
-          style={{
-            background: "#0c0f1a",
-            borderRadius: "16px",
-            padding: "1.5rem",
-            border: "1px solid #1e2235",
-          }}
-        >
-          <h2 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
-            Your position
-          </h2>
+        
+        <section>
+          <p
+            style={{
+              fontSize: "0.75rem",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              opacity: 0.8,
+              marginBottom: "0.8rem",
+            }}
+          >
+            Base Sepolia testnet · mock USDC only
+          </p>
 
-          {!address && (
-            <p style={{ opacity: 0.8 }}>Connect your wallet to view balances.</p>
-          )}
+          <h1
+            style={{
+              fontSize: "2.3rem",
+              lineHeight: 1.1,
+              fontWeight: 700,
+              marginBottom: "1rem",
+            }}
+          >
+            A simple USD savings vault
+            <br />
+            powered by <span style={{ color: "#f97316" }}>AFR</span>.
+          </h1>
 
-          {address && (
-            <>
-              <div style={{ marginBottom: "1.25rem" }}>
-                <div style={{ fontSize: "0.85rem", opacity: 0.6 }}>Wallet</div>
-                <div style={{ fontFamily: "monospace", fontSize: "0.9rem" }}>
-                  {address.slice(0, 6)}...{address.slice(-4)}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                  marginBottom: "1.5rem",
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
-                    mUSDC balance
-                  </div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-                    {displayUsdc(mUsdcBalance, 6)} mUSDC
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
-                    Vault shares
-                  </div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-                    {displayShares(shareBalance, 6)} aSHARE
-                  </div>
-                </div>
-              </div>
-
-              {/* Position value */}
-              <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
-                  Vault position value
-                </div>
-                <div style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-                  {displayUsdc(positionValue, 6)} mUSDC
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                }}
-              >
-                {/* Deposit */}
-                <div>
-                  <label
-                    style={{
-                      fontSize: "0.85rem",
-                      opacity: 0.8,
-                      display: "block",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Deposit mUSDC
-                  </label>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <input
-                      value={depositAmount}
-                      onChange={(e) => setDepositAmount(e.target.value)}
-                      placeholder="0.00"
-                      style={{
-                        flex: 1,
-                        padding: "0.6rem 0.75rem",
-                        borderRadius: "10px",
-                        border: "1px solid #262a40",
-                        background: "#05060b",
-                        color: "white",
-                      }}
-                    />
-                    <button
-                      onClick={handleDeposit}
-                      disabled={isPending || !address}
-                      style={{
-                        padding: "0.6rem 1.2rem",
-                        borderRadius: "10px",
-                        border: "none",
-                        background:
-                          isPending || !address ? "#33384f" : "#3b82f6",
-                        color: "white",
-                        fontWeight: 600,
-                        cursor: isPending || !address ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {isPending ? "Submitting..." : "Deposit"}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Withdraw */}
-                <div>
-                  <label
-                    style={{
-                      fontSize: "0.85rem",
-                      opacity: 0.8,
-                      display: "block",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Withdraw (in shares)
-                  </label>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <input
-                      value={withdrawShares}
-                      onChange={(e) => setWithdrawShares(e.target.value)}
-                      placeholder="0.00"
-                      style={{
-                        flex: 1,
-                        padding: "0.6rem 0.75rem",
-                        borderRadius: "10px",
-                        border: "1px solid #262a40",
-                        background: "#05060b",
-                        color: "white",
-                      }}
-                    />
-                    <button
-                      onClick={handleWithdraw}
-                      disabled={isPending || !address}
-                      style={{
-                        padding: "0.6rem 1.2rem",
-                        borderRadius: "10px",
-                        border: "none",
-                        background:
-                          isPending || !address ? "#33384f" : "#f97316",
-                        color: "white",
-                        fontWeight: 600,
-                        cursor: isPending || !address ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {isPending ? "Submitting..." : "Withdraw"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Right: vault stats */}
-        <div
-          style={{
-            background: "#0c0f1a",
-            borderRadius: "16px",
-            padding: "1.5rem",
-            border: "1px solid #1e2235",
-          }}
-        >
-          <h2 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
-            Vault stats
-          </h2>
+          <p
+            style={{
+              fontSize: "0.98rem",
+              lineHeight: 1.7,
+              opacity: 0.9,
+              marginBottom: "1.25rem",
+              maxWidth: "38rem",
+            }}
+          >
+            AFR Savings Vault is a lightweight, transparent, smart
+            contract–powered savings vault built to help people preserve value
+            in a stable USD-denominated asset, starting with the AFR ecosystem.
+            This prototype runs on Base Sepolia using mock USDC (mUSDC).
+          </p>
 
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem",
+              fontSize: "0.9rem",
+            }}
           >
-            <StatRow
-              label="Total assets"
-              value={`${displayUsdc(totalAssets, 6)} mUSDC`}
-            />
-            <StatRow
-              label="Total shares"
-              value={`${displayShares(totalShares, 6)} aSHARE`}
-            />
-            <StatRow
-              label="Implied share price"
-              value={`${sharePrice.toFixed(8)} mUSDC per share`}
-            />
+            <span style={{ opacity: 0.8 }}>AFR clears DeFi complexity with:</span>
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: "1.1rem",
+                lineHeight: 1.7,
+                opacity: 0.95,
+              }}
+            >
+              <li>Deposit USD-stable tokens (mUSDC on testnet)</li>
+              <li>Receive aSHARE vault tokens</li>
+              <li>Withdraw anytime — no lockups</li>
+              <li>
+                As the vault grows, each share becomes redeemable for more USD
+              </li>
+            </ul>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function StatRow({ label, value }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        fontSize: "0.9rem",
-      }}
-    >
-      <span style={{ opacity: 0.7 }}>{label}</span>
-      <span style={{ fontFamily: "monospace" }}>{value}</span>
+          <div style={{ marginTop: "1.75rem", display: "flex", gap: "1rem" }}>
+            <Link
+              href="/vault"
+              style={{
+                padding: "0.7rem 1.4rem",
+                borderRadius: "999px",
+                background: "#ec4899",
+                color: "white",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                textDecoration: "none",
+                boxShadow: "0 16px 40px rgba(236, 72, 153, 0.4)",
+              }}
+            >
+              Try the testnet vault
+            </Link>
+            <p
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.7,
+                maxWidth: "14rem",
+              }}
+            >
+              No real money. You’ll use Base Sepolia ETH + mock mUSDC from the
+              built-in faucet.
+            </p>
+          </div>
+        </section>
+
+        
+        <section
+          style={{
+            background: "rgba(5, 6, 11, 0.9)",
+            borderRadius: "18px",
+            padding: "1.5rem 1.4rem",
+            border: "1px solid rgba(248, 250, 252, 0.06)",
+            boxShadow:
+              "0 18px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(15,23,42,0.6)",
+            fontSize: "0.86rem",
+            lineHeight: 1.6,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "1rem",
+              fontWeight: 600,
+              marginBottom: "0.6rem",
+            }}
+          >
+            Vision
+          </h2>
+          <p style={{ opacity: 0.85, marginBottom: "0.75rem" }}>
+            Many regions experience unstable financial systems and rising
+            inflation. Stablecoins and on-chain finance give people a way to
+            store value. But most existing DeFi apps are complex, risky, and not
+            user-friendly.
+          </p>
+          <p style={{ opacity: 0.85, marginBottom: "0.75rem" }}>
+            AFR clears this with a simple flow: deposit, receive shares,
+            withdraw any time. As the vault grows, each share is redeemable for
+            more USD.
+          </p>
+          <p style={{ opacity: 0.85, marginBottom: "0.75rem" }}>
+            Today, AFR is a testnet prototype on Base Sepolia using mock USDC
+            (mUSDC). Tomorrow, AFR mainnet — an AFR app-chain rollup, and
+            eventually a standalone L1 if necessary.
+          </p>
+
+          <hr
+            style={{
+              borderColor: "rgba(148,163,184,0.25)",
+              margin: "1rem 0 0.9rem",
+            }}
+          />
+
+          <h3
+            style={{
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              marginBottom: "0.5rem",
+            }}
+          >
+            Architecture Overview
+          </h3>
+          <p style={{ opacity: 0.85, marginBottom: "0.4rem" }}>
+            <strong>SavingsVault.sol</strong> smart contract:
+          </p>
+          <ul
+            style={{
+              margin: 0,
+              paddingLeft: "1.1rem",
+              opacity: 0.9,
+              lineHeight: 1.6,
+            }}
+          >
+            <li>Accepts stablecoin deposits (mUSDC on testnet)</li>
+            <li>Mints proportional vault shares (aSHARE)</li>
+            <li>Handles withdrawals at any time</li>
+            <li>Supports simulated yield via owner deposits</li>
+            <li>Fully on-chain accounting (no oracles)</li>
+          </ul>
+
+          <p
+            style={{
+              marginTop: "1rem",
+              opacity: 0.7,
+            }}
+          >
+            This repo contains the smart contracts, frontend dApp, and roadmap
+            for AFR.
+          </p>
+        </section>
+      </main>
     </div>
   );
 }
